@@ -4,7 +4,7 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="eclipsify" name="scala-notes-ihm">
+<project basedir="." default="eclipsify" name="scala-notes">
 	<property environment="env" />
 	<property name="ECLIPSE_HOME" value="../../../Eclipses/eclipse-scala" />
 	<property name="workspace.location" value="../" />
