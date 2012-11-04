@@ -17,4 +17,28 @@
 			<arg value="eclipse with-source=true" />
 		</exec>
 	</target>
+
+	<target name="clean">
+		<exec executable="/usr/bin/sbt" dir="${workspace.location}">
+			<arg value="clean" />
+		</exec>
+	</target>
+
+	<target name="compile">
+		<exec executable="/usr/bin/sbt" dir="${workspace.location}">
+			<arg value="compile" />
+		</exec>
+	</target>
+
+	<target name="test">
+		<exec executable="/usr/bin/sbt" dir="${workspace.location}">
+			<arg value="test" />
+		</exec>
+	</target>
+
+	<target name="run">
+		<exec executable="/usr/bin/sbt" dir="${workspace.location}">
+			<arg value="run" />
+		</exec>
+	</target>
 </project>
