@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>scala-notes</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Build.scala</name>
+			<type>1</type>
+			<location>/media/Donnees/Workspace/scala-notes/project/Build.scala</location>
+		</link>
+		<link>
+			<name>gitignore</name>
+			<type>1</type>
+			<location>/media/Donnees/Workspace/scala-notes/.gitignore</location>
+		</link>
+	</linkedResources>
+</projectDescription>
