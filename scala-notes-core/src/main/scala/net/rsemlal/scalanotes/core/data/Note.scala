@@ -6,22 +6,31 @@ object Note {
   type Note = GenericNote[NoteRef]
 }
 
-/**
- * Classe Note, contient les informations d'une note.
- */
-sealed trait GenericNote[+TNoteRef <: NoteRef] {
-  val ref: TNoteRef;
-  val title: String;
-  val content: String;
+trait INoteInfo {
+  val title: String
+  val content: String
   val metadata: ImMap[String, String]
 }
 
-case class SecretNote(val ref: SecretNoteRef,
-  val title: String,
+case class NoteInfo(val title: String,
   val content: String,
-  val metadata: ImMap[String, String]) extends GenericNote[SecretNoteRef]
+  val metadata: ImMap[String, String]) extends INoteInfo
 
-case class ClearNote(val ref: ClearNoteRef,
-  val title: String,
-  val content: String,
-  val metadata: ImMap[String, String]) extends GenericNote[ClearNoteRef]
+/**
+ * Classe Note, contient les informations d'une note.
+ */
+sealed trait GenericNote[+TNoteRef <: NoteRef] extends INoteInfo {
+  val ref: TNoteRef
+}
+
+case class SecretNote(val ref: SecretNoteRef, infos: INoteInfo) extends GenericNote[SecretNoteRef] {
+  val title = infos.title
+  val content = infos.content
+  val metadata = infos.metadata
+}
+
+case class ClearNote(val ref: ClearNoteRef, infos: INoteInfo) extends GenericNote[ClearNoteRef] {
+  val title = infos.title
+  val content = infos.content
+  val metadata = infos.metadata
+}
