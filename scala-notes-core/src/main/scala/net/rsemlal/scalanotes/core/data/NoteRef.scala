@@ -2,7 +2,6 @@ package net.rsemlal.scalanotes.core.data
 
 import java.io.File
 
-
 sealed trait NoteRef
   extends EncryptionAbility {
   val name: String;

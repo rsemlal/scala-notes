@@ -1,6 +1,5 @@
 package net.rsemlal.scalanotes.core.data
 
-
 trait EncryptionAbility {
   val isEncrypted: Boolean
 }

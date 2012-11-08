@@ -1,7 +1,9 @@
 package net.rsemlal.scalanotes.core.services.impl
 
-import net.rsemlal.scalanotes.core.services.StringEncoderService
+import scala.Array.canBuildFrom
+
 import net.rsemlal.scalanotes.core.services.StringEncoder
+import net.rsemlal.scalanotes.core.services.StringEncoderService
 
 trait UTF8StringEncoderService extends StringEncoderService {
   val stringEncoder = new JavaCharsetStringEncoder("UTF-8")
@@ -21,7 +23,7 @@ class JavaCharsetStringEncoder(val charset: String) extends StringEncoder {
 
   def stringToBytes(string: String) =
     string.getBytes(charset)
-    
+
   def bytesToString(bytes: Array[Byte]) =
     new String(bytes, charset)
 

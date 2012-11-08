@@ -1,5 +1,7 @@
 package net.rsemlal.scalanotes.core.services.impl
 
+import scala.Array.canBuildFrom
+
 import net.rsemlal.scalanotes.core.services.Encryptor
 import net.rsemlal.scalanotes.core.services.EncryptorService
 import net.rsemlal.scalanotes.core.services.StringEncoder
@@ -27,7 +29,7 @@ class XorEncryptor(stringEncoder: StringEncoder) extends Encryptor {
     val passwordBytes = stringEncoder.stringToBytes(text)
     stringEncoder.bytesToHex(xor(textBytes, passwordBytes))
   }
-  
+
   def decrypt(text: String, password: String) = {
     val textBytes = stringEncoder.hexToBytes(text)
     val passwordBytes = stringEncoder.stringToBytes(text)
