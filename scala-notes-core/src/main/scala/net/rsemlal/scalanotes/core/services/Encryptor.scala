@@ -3,7 +3,7 @@ package net.rsemlal.scalanotes.core.services
 import net.rsemlal.scalanotes.core.data.UnlockedEncryptionToken
 
 trait EncryptorService {
-  val encryptor: Encryptor
+  implicit val encryptor: Encryptor
 }
 
 trait Encryptor {

@@ -6,6 +6,10 @@ object ScalaNoteExceptions {
   sealed abstract class ScalaNoteException(message: String, innerException: Throwable = null)
     extends Exception(message, innerException)
 
+  final class CatalogIOException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
+    extends Exception(message, innerException)
+  final class UnkownNoteRefException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
+    extends Exception(message, innerException)
   sealed class EncryptionException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
     extends ScalaNoteException(message, innerException)
 
