@@ -1,7 +1,7 @@
 package net.rsemlal.scalanotes.core.services
 
 trait StringEncoderService {
-  val stringEncoder: StringEncoder
+  implicit val stringEncoder: StringEncoder
 }
 
 trait StringEncoder {

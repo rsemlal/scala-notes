@@ -15,6 +15,8 @@ import net.rsemlal.scalanotes.core.data.SecretNoteRef
 import net.rsemlal.scalanotes.core.data.UnlockedEncryptionToken
 import net.rsemlal.scalanotes.core.services.Encryptor
 import net.rsemlal.scalanotes.core.services.EncryptorService
+import net.rsemlal.scalanotes.core.services.HasherService
+import net.rsemlal.scalanotes.core.services.Hasher
 
 object NoteCatalog {
   implicit protected def infos2Encryptable(infos: INoteInfo)(implicit encryptor: Encryptor) = new {
@@ -40,12 +42,16 @@ object NoteCatalog {
       NoteInfo(dtitle, dcontent, dmetadata)
     }
   }
+
+  protected def verify(ref: SecretNoteRef, token: UnlockedEncryptionToken)(implicit hasher: Hasher) = {
+    hasher.hash(token.password) == ref.passwordHash
+  }
 }
 
 /**
  * Catalogue de note, fournit des méthodes pour lire et écrire des notes dans un catalogue.
  */
-trait NoteCatalog extends EncryptorService {
+trait NoteCatalog extends EncryptorService with HasherService {
   import NoteCatalog._
 
   /**
@@ -90,11 +96,18 @@ trait NoteCatalog extends EncryptorService {
    *
    * @throws ScalaNoteExceptions.UnkownNoteRefException Si la référence à la note n'appartient pas à ce catalogue.
    * @throws ScalaNoteExceptions.CatalogIOException En cas d'erreur d'entrée/sortie lors de l'accès au catalogue.
+   * @throws ScalaNoteExceptions.WrongPasswordException En cas de mot de passe incorrect.
    */
   def readNote(ref: SecretNoteRef, token: UnlockedEncryptionToken) = {
-    val infos = absoluteReadNote(ref)
-    val dinfos = infos.decrypt(token)
-    SecretNote(ref, dinfos)
+    if (verify(ref, token)) {
+      val infos = absoluteReadNote(ref)
+      val dinfos = infos.decrypt(token)
+      SecretNote(ref, dinfos)
+    } else {
+      throw new ScalaNoteExceptions.WrongPasswordException(ref, token)
+      null
+    }
+
   }
 
   def readNote(ref: SecretNoteRef, token: EncryptionToken): SecretNote = token match {
@@ -135,14 +148,20 @@ trait NoteCatalog extends EncryptorService {
   }
 
   /**
-   * écrit le contenu d'une note encrypté avec un token dans le catalogue.
+   * écrit le contenu d'une note encryptée avec un token dans le catalogue.
    *
    * @throws ScalaNoteExceptions.CatalogIOException En cas d'erreur
    * d'entrée/sortie lors de l'accès au catalogue.
+   * @throws ScalaNoteExceptions.WrongPasswordException En cas de mot de passe incorrect.
    */
   def putNote(ref: SecretNoteRef, token: UnlockedEncryptionToken, infos: INoteInfo) = {
-    val einfos = infos.encrypt(token)
-    absolutePutNote(ref, einfos)
+    if (verify(ref, token)) {
+      val einfos = infos.encrypt(token)
+      absolutePutNote(ref, einfos)
+    } else {
+      throw new ScalaNoteExceptions.WrongPasswordException(ref, token)
+    }
+
   }
 
 }

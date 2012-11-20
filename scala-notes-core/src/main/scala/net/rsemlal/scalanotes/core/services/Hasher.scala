@@ -4,7 +4,7 @@ import net.rsemlal.scalanotes.core.data.LockedEncryptionToken
 import net.rsemlal.scalanotes.core.data.UnlockedEncryptionToken
 
 trait HasherService {
-  val hasher: Hasher
+  implicit val hasher: Hasher
 }
 
 trait Hasher {
