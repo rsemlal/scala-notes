@@ -5,6 +5,7 @@ trait StringEncoderService {
 }
 
 trait StringEncoder {
+  val charset: String
   def stringToBytes(string: String): Array[Byte]
   def bytesToString(bytes: Array[Byte]): String
 

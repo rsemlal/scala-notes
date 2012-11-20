@@ -8,11 +8,11 @@ import net.rsemlal.scalanotes.core.services.StringEncoder
 import net.rsemlal.scalanotes.core.services.StringEncoderService
 
 trait MD5HasherService extends HasherService with StringEncoderService {
-  val hasher = new MessageDigestHasher("MD5", stringEncoder)
+  lazy val hasher = new MessageDigestHasher("MD5", stringEncoder)
 }
 
 trait SHA1HasherService extends HasherService with StringEncoderService {
-  val hasher = new MessageDigestHasher("SHA-1", stringEncoder)
+  lazy val hasher = new MessageDigestHasher("SHA-1", stringEncoder)
 }
 
 class MessageDigestHasher(val algo: String, stringEncoder: StringEncoder) extends Hasher {
