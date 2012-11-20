@@ -10,8 +10,12 @@ object ScalaNoteExceptions {
 
   final class CatalogIOException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
     extends Exception(message, innerException)
-  final class UnkownNoteRefException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
-    extends Exception(message, innerException)
+
+  final class UnkownNoteRefException(val noteRef: NoteRef,
+                                     val catalog: NoteCatalog,
+                                     innerException: Throwable = null)
+      extends Exception("La note '%s' n'existe pas dans le catalogue".format(noteRef.name), innerException)
+
   sealed class EncryptionException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
     extends ScalaNoteException(message, innerException)
 
