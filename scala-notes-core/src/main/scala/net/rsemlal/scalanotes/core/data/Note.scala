@@ -1,9 +1,16 @@
 package net.rsemlal.scalanotes.core.data
 
-import scala.collection.immutable.{ Map => ImMap }
+import scala.collection.immutable.{ Map ⇒ ImMap }
 
 object Note {
   type Note = GenericNote[NoteRef]
+}
+
+object NoteInfo {
+  def create(title: String,
+             content: String,
+             metadata: ImMap[String, String] = new scala.collection.immutable.HashMap) =
+    new NoteInfo(title, content, metadata)
 }
 
 trait INoteInfo {
@@ -13,8 +20,8 @@ trait INoteInfo {
 }
 
 case class NoteInfo(val title: String,
-  val content: String,
-  val metadata: ImMap[String, String]) extends INoteInfo
+                    val content: String,
+                    val metadata: ImMap[String, String]) extends INoteInfo
 
 /**
  * Classe Note, contient les informations d'une note.

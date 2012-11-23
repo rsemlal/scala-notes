@@ -161,7 +161,5 @@ trait NoteCatalog extends EncryptorService with HasherService {
     } else {
       throw new ScalaNoteExceptions.WrongPasswordException(ref, token)
     }
-
   }
-
 }

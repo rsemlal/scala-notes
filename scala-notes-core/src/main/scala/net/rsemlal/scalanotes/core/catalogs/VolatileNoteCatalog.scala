@@ -1,11 +1,11 @@
 package net.rsemlal.scalanotes.core.catalogs
 
-import net.rsemlal.scalanotes.core.NoteCatalog
-import net.rsemlal.scalanotes.core.data.NoteRef
 import scala.collection.Traversable
-import net.rsemlal.scalanotes.core.services.Hasher
-import net.rsemlal.scalanotes.core.data.INoteInfo
+
+import net.rsemlal.scalanotes.core.NoteCatalog
 import net.rsemlal.scalanotes.core.ScalaNoteExceptions
+import net.rsemlal.scalanotes.core.data.INoteInfo
+import net.rsemlal.scalanotes.core.data.NoteRef
 
 /**
  * Catalogue de notes volatil (non persistant).
