@@ -14,7 +14,7 @@ abstract class VolatileNoteCatalog extends NoteCatalog {
 
   private val memory = new scala.collection.mutable.HashMap[NoteRef, INoteInfo]
 
-  def allNoteRefs(): Traversable[NoteRef] =
+  def allNoteRefs =
     memory.keySet
 
   def absoluteReadNote(ref: NoteRef): INoteInfo = memory.get(ref) match {
@@ -24,4 +24,10 @@ abstract class VolatileNoteCatalog extends NoteCatalog {
 
   def absolutePutNote(ref: NoteRef, infos: INoteInfo): Unit =
     memory.put(ref, infos)
+
+  def getRefByName(name: String) = (for (
+    ref ← allNoteRefs if (ref.name == name)
+  ) yield ref).headOption
+
+  protected def generateLocationForName(name: String) = "X"
 }

@@ -17,6 +17,8 @@ import net.rsemlal.scalanotes.core.services.Encryptor
 import net.rsemlal.scalanotes.core.services.EncryptorService
 import net.rsemlal.scalanotes.core.services.HasherService
 import net.rsemlal.scalanotes.core.services.Hasher
+import net.rsemlal.scalanotes.core.data.ClearNoteRef
+import net.rsemlal.scalanotes.core.data.SecretNoteRef
 
 object NoteCatalog {
   implicit protected def infos2Encryptable(infos: INoteInfo)(implicit encryptor: Encryptor) = new {
@@ -81,12 +83,63 @@ trait NoteCatalog extends EncryptorService with HasherService {
   protected def absolutePutNote(ref: NoteRef, infos: INoteInfo)
 
   /**
+   * Retrouve une référence à une note à partir de son nom.
+   * @param name Nom à chercher.
+   *
+   * @return La référence qui possède ce nom ou None le cas échéant.
+   */
+  def getRefByName(name: String): Option[NoteRef]
+
+  /**
+   * Génére une nouvelle localisation pour un nom de note.
+   */
+  protected def generateLocationForName(name: String): String
+
+  /**
+   * Crée une nouvelle référence à une note NON secrète.
+   * Cette méthode ne vérifie PAS s'il existe déjà une note avec ce nom.
+   * @param name Nom de la nouvelle note.
+   *
+   * @return référence à la nouvelle note.
+   */
+  def createRef(name: String): ClearNoteRef = {
+    ClearNoteRef(name, generateLocationForName(name))
+  }
+
+  /**
+   * Crée une nouvelle référence à une note secrète.
+   * Cette méthode ne vérifie PAS s'il existe déjà une note avec ce nom.
+   * @param name Nom de la nouvelle note.
+   * @param password mot de passe en clair de la note.
+   *
+   * @return référence à la note.
+   */
+  def createRef(name: String, password: String): SecretNoteRef =
+    SecretNoteRef(name, generateLocationForName(name), hasher.hash(password))
+
+  /**
+   * Crée de nouvelles infos.
+   */
+  def createInfos(title: String,
+                  content: String,
+                  metadata: scala.collection.immutable.Map[String, String] = new scala.collection.immutable.HashMap) =
+    new NoteInfo(title, content, metadata)
+
+  /**
+   * Vérifie si il existe une note dans le catalogue possède un nom donné.
+   * @param name Nom à chercher dans le catalogue.
+   *
+   * @return [[true]] s'il existe une note avec ce nom dans le catalogue; [[else]] sinon.
+   */
+  def isNameUsed(name: String) = getRefByName(name).isDefined
+
+  /**
    * Lit le contenu d'une note non encrypté du catalogue.
    *
    * @throws ScalaNoteExceptions.UnkownNoteRefException Si la référence à la note n'appartient pas à ce catalogue.
    * @throws ScalaNoteExceptions.CatalogIOException En cas d'erreur d'entrée/sortie lors de l'accès au catalogue.
    */
-  def readNote(ref: ClearNoteRef) = {
+  def read(ref: ClearNoteRef) = {
     val infos = absoluteReadNote(ref)
     ClearNote(ref, infos)
   }
@@ -98,7 +151,7 @@ trait NoteCatalog extends EncryptorService with HasherService {
    * @throws ScalaNoteExceptions.CatalogIOException En cas d'erreur d'entrée/sortie lors de l'accès au catalogue.
    * @throws ScalaNoteExceptions.WrongPasswordException En cas de mot de passe incorrect.
    */
-  def readNote(ref: SecretNoteRef, token: UnlockedEncryptionToken) = {
+  def read(ref: SecretNoteRef, token: UnlockedEncryptionToken) = {
     if (verify(ref, token)) {
       val infos = absoluteReadNote(ref)
       val dinfos = infos.decrypt(token)
@@ -110,40 +163,12 @@ trait NoteCatalog extends EncryptorService with HasherService {
 
   }
 
-  def readNote(ref: SecretNoteRef, token: EncryptionToken): SecretNote = token match {
-    case utoken: UnlockedEncryptionToken ⇒ readNote(ref, utoken)
-    case _                               ⇒ throw new ScalaNoteExceptions.UnlockedTokenNeededException(ref)
-  }
-
-  def readNote(ref: NoteRef, token: UnlockedEncryptionToken): SecretNote = ref match {
-    case sref: SecretNoteRef ⇒ readNote(sref, token)
-    case _                   ⇒ throw new ScalaNoteExceptions.NoTokenNeededException(ref)
-  }
-
-  def readNote(ref: NoteRef, token: LockedEncryptionToken): SecretNote = ref match {
-    case cref: ClearNoteRef ⇒ throw new ScalaNoteExceptions.NoTokenNeededException(ref)
-    case _                  ⇒ throw new ScalaNoteExceptions.UnlockedTokenNeededException(ref)
-  }
-
-  def readNote(ref: NoteRef, token: EncryptionToken): SecretNote = token match {
-    case utoken: UnlockedEncryptionToken ⇒ readNote(ref, utoken)
-    case ltoken: LockedEncryptionToken   ⇒ readNote(ref, ltoken)
-  }
-
-  def readNote(ref: NoteRef, tokenOpt: Option[EncryptionToken] = None): Note = tokenOpt match {
-    case Some(token) ⇒ readNote(ref, token)
-    case None ⇒ ref match {
-      case cref: ClearNoteRef ⇒ readNote(cref)
-      case _                  ⇒ throw new ScalaNoteExceptions.UnlockedTokenNeededException(ref)
-    }
-  }
-
   /**
    * écrit le contenu d'une note en clair dans le catalogue.
    *
    * @throws ScalaNoteExceptions.CatalogIOException En cas d'erreur d'entrée/sortie lors de l'accès au catalogue.
    */
-  def putNote(ref: ClearNoteRef, infos: INoteInfo) = {
+  def write(ref: ClearNoteRef, infos: INoteInfo) = {
     absolutePutNote(ref, infos)
   }
 
@@ -154,7 +179,7 @@ trait NoteCatalog extends EncryptorService with HasherService {
    * d'entrée/sortie lors de l'accès au catalogue.
    * @throws ScalaNoteExceptions.WrongPasswordException En cas de mot de passe incorrect.
    */
-  def putNote(ref: SecretNoteRef, token: UnlockedEncryptionToken, infos: INoteInfo) = {
+  def write(ref: SecretNoteRef, token: UnlockedEncryptionToken, infos: INoteInfo) = {
     if (verify(ref, token)) {
       val einfos = infos.encrypt(token)
       absolutePutNote(ref, einfos)
@@ -162,4 +187,7 @@ trait NoteCatalog extends EncryptorService with HasherService {
       throw new ScalaNoteExceptions.WrongPasswordException(ref, token)
     }
   }
+
+  def unlockTocken(password: String, token: LockedEncryptionToken) =
+    hasher.unlockTocken(password, token)
 }

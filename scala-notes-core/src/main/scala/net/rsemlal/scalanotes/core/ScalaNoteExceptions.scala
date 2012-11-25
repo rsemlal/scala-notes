@@ -14,7 +14,13 @@ object ScalaNoteExceptions {
   final class UnkownNoteRefException(val noteRef: NoteRef,
                                      val catalog: NoteCatalog,
                                      innerException: Throwable = null)
-      extends Exception("La note '%s' n'existe pas dans le catalogue".format(noteRef.name), innerException)
+      extends Exception("La note '%s' n'existe pas dans le catalogue".format(noteRef.name),
+        innerException)
+
+  final class NameAlreadyInUseException(val name: String, val catalog: NoteCatalog,
+                                        innerException: Throwable = null)
+      extends Exception("Le nom '%s' est déjà utilisé dans le catalogue".format(name),
+        innerException)
 
   sealed class EncryptionException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
     extends ScalaNoteException(message, innerException)
