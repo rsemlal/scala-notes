@@ -8,7 +8,7 @@ object ScalaNoteExceptions {
   sealed abstract class ScalaNoteException(message: String, innerException: Throwable = null)
     extends Exception(message, innerException)
 
-  final class CatalogIOException(val noteRef: NoteRef, message: String, innerException: Throwable = null)
+  final class CatalogIOException(val catalog: NoteCatalog, message: String, innerException: Throwable = null)
     extends Exception(message, innerException)
 
   final class UnkownNoteRefException(val noteRef: NoteRef,

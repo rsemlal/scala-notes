@@ -54,7 +54,7 @@ abstract class NoteCatalogTest(val name: String, catalogGen: ⇒ NoteCatalog) ex
       catalog.allNoteRefs should have size (0)
     }
 
-    it("should add clear note") {
+    it("should add secret note") {
       val infos = catalog.createInfos(title = title(fixture), content = content(fixture))
       val ref = catalog.createRef(name(fixture), password(fixture))
 

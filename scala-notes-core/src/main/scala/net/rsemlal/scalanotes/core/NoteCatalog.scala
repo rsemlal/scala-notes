@@ -115,7 +115,18 @@ trait NoteCatalog extends EncryptorService with HasherService {
    * @return référence à la note.
    */
   def createRef(name: String, password: String): SecretNoteRef =
-    SecretNoteRef(name, generateLocationForName(name), hasher.hash(password))
+    createRefUsingHash(name, hasher.hash(password))
+
+  /**
+   * Crée une nouvelle référence à une note secrète.
+   * Cette méthode ne vérifie PAS s'il existe déjà une note avec ce nom.
+   * @param name Nom de la nouvelle note.
+   * @param passwordHash mot de passe en haché de la note.
+   *
+   * @return référence à la note.
+   */
+  def createRefUsingHash(name: String, passwordHash: String): SecretNoteRef =
+    SecretNoteRef(name, generateLocationForName(name), passwordHash)
 
   /**
    * Crée de nouvelles infos.

@@ -19,5 +19,5 @@ class MessageDigestHasher(val algo: String, stringEncoder: StringEncoder) extend
   private def digester = MessageDigest.getInstance(algo)
 
   def hash(text: String) =
-    stringEncoder.bytesToString(digester.digest(stringEncoder.stringToBytes(text)))
+    stringEncoder.bytesToHex(digester.digest(stringEncoder.stringToBytes(text)))
 }
